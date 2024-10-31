@@ -2,6 +2,7 @@
   "expo": {
     "name": "my-app",
     "slug": "my-app",
+    "scheme": "my-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,6 +12,24 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow my-app to access your camera",
+          "microphonePermission": "Allow my-app to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },
