@@ -1,4 +1,4 @@
-import { Text, View, Pressable ,TextInput, StyleSheet, Platform, FlatList } from "react-native";
+import { Text, View, Pressable ,TextInput, StyleSheet, Platform, FlatList, Image } from "react-native";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { createTable } from '../components/database/create_database'

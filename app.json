@@ -28,6 +28,14 @@
           "microphonePermission": "Allow my-app to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow my-app to access your photos.",
+          "savePhotosPermission": "Allow my-app to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
       ]
     ],
     "ios": {
