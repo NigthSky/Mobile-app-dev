@@ -7,6 +7,7 @@ export default function RootLayout() {
       <Stack.Screen name="Profile"/>
       <Stack.Screen name="Register"/>
       <Stack.Screen name="camera"/>
+      <Stack.Screen name="signature"/>
     </Stack>
   );
 }

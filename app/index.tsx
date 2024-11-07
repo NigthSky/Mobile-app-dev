@@ -6,7 +6,6 @@ import { getUser,getAllusers } from '../components/database/users';
 import { currentUserInfo } from '../components/database/currentuser';
 import {addLocaluser, synchronize} from '../components/synchronize'
 
-
 export default function Index() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -127,7 +126,9 @@ export default function Index() {
       <Pressable style={styles.loginButton} onPress={gotoRegister}><Text>Register</Text></Pressable>
       <Pressable style={styles.loginButton} onPress={synchronizeStart}><Text>Synchronize</Text></Pressable>
       <Pressable style={styles.loginButton} onPress={getAllUsers}><Text>Get ALL Users</Text></Pressable>
-      <Pressable style={styles.loginButton} onPress={() => router.push('./camera')}><Text>Camera</Text></Pressable>
+      <Pressable style={styles.loginButton} onPress={() => router.push('/camera')}><Text>Camera</Text></Pressable>
+      <Pressable style={styles.loginButton} onPress={() => router.push('/signature')}><Text>signature</Text></Pressable>
+      <Pressable style={styles.loginButton} onPress={() => router.push('./test')}><Text>test</Text></Pressable>
       {Users}
     </View>
   );

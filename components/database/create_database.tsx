@@ -30,6 +30,7 @@ export const createTable = () => {
       (_,error) => { console.error('Error creating table:', error); return true }
     );
 
+    // image id input
     tx.executeSql(
       `CREATE TABLE IF NOT EXISTS time_logs(
         id INTEGER PRIMARY KEY NOT NULL,
@@ -37,6 +38,8 @@ export const createTable = () => {
         date TEXT,
         time_in TEXT,
         time_out TEXT,
+        imgtime_in TEXT, 
+        imgtime_out TEXT,
         FOREIGN KEY (user_id) REFERENCES users (id));`,
       [],
       () => {console.log('Table time_logs created successfully!')},

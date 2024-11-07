@@ -2,6 +2,7 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRef, useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Alert, FlatList } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
+import RNFS from 'react-native-fs';
 
 export default function Camera() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
@@ -10,8 +11,9 @@ export default function Camera() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [assets, setAssets] = useState<any[]>([]);
   const cameraRef = useRef<any | null>(null);
-  const albumName = 'DCIM'; // Change this to your desired album name
+  const albumName = 'TEST'; // Change this to your desired album name
 
+  //getting permission on media-library
   useEffect(() => {
     const checkPermissions = async () => {
       const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -22,24 +24,8 @@ export default function Camera() {
     checkPermissions();
   }, []);
 
-  const createAlbumIfNotExists = async () => {
-    try {
-      const albums = await MediaLibrary.getAlbumsAsync();
-      const albumExists = albums.some(album => album.title === albumName);
 
-      if (!albumExists) {
-        await MediaLibrary.createAlbumAsync(albumName);
-        Alert.alert('Album created', `Album "${albumName}" has been created.`);
-      } else {
-        Alert.alert('Album exists', `The album "${albumName}" already exists.`);
-      }
-    } catch (error) {
-      console.error('Error creating album:', error);
-      Alert.alert('Error', 'Could not create the album.');
-    }
-  };
-
-  // Fetch assets from the specified album
+  // Fetch assets/images from the specified album
   const fetchAssetsFromAlbum = async () => {
     try {
       const album = await MediaLibrary.getAlbumAsync(albumName);
@@ -60,28 +46,55 @@ export default function Camera() {
     }
   };
 
+  //capture a image from camera
   const takePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
+      console.log('photo: ', photo)
       setImageUri(photo.uri);
       Alert.alert('Picture taken!', 'You can save the image or take another one.');
     }
   };
 
+  //save image to media-library
   const savePicture = async () => {
     if (imageUri) {
-      try {
-        await MediaLibrary.createAssetAsync(imageUri);
-        Alert.alert('Photo saved!', 'Your photo has been saved to the gallery.');
-        await createAlbumIfNotExists(); // Create album after saving the photo
-        setImageUri(null); // Reset imageUri after saving
-      } catch (error) {
-        console.error('Error saving the picture:', error);
-        Alert.alert('Error', 'Could not save the picture.');
-      }
-    }
-  };
+        const fileName = `photo_${Date.now()}.jpg`; // Unique file name
+        const path = `${RNFS.PicturesDirectoryPath}/${fileName}`;
 
+        try {
+          await RNFS.moveFile(imageUri, path);
+          Alert.alert('Success', `Image saved to ${path}`);
+        } catch (error) {
+          console.error('Error saving image:', error);
+          Alert.alert('Error', 'Failed to save the image.');
+        }
+
+    //     try {
+    //         const asset = await MediaLibrary.createAssetAsync(imageUri);
+    //         console.log('Asset created:', asset);
+
+    //         let album = await MediaLibrary.getAlbumAsync(albumName);
+
+    //         if (!album) {
+    //           album = await MediaLibrary.createAlbumAsync(albumName, asset, false);
+    //           console.log('Album created:', album);
+    //       } else {
+    //           console.log('Album found:', album);
+    //           await MediaLibrary.addAssetsToAlbumAsync([asset.id], album.id, true);
+    //           await FileSystem.deleteAsync(asset.uri, { idempotent: true });
+    //       }
+    //         //await MediaLibrary.addAssetsToAlbumAsync([asset.id], album.id, false);
+    //         Alert.alert('Success', 'Your photo has been saved to the album.');
+    //         setImageUri(null);
+    //     } catch (error) {
+    //         console.error('Error saving the picture:', error);
+    //         Alert.alert('Error', 'Could not save the picture.');
+    //     }
+    }
+};
+
+  //toggle camera back or front
   const toggleCameraFacing = () => {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   };
@@ -105,6 +118,20 @@ export default function Camera() {
     );
   }
 
+  if(imageUri) {
+    return(
+      <View style={styles.container}>
+          <Image source={{ uri: imageUri }} style={styles.preview} />
+          <TouchableOpacity style={{alignSelf: 'center'}} onPress={savePicture}>
+            <Text style={styles.text}>Save Image</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{alignSelf: 'center'}} onPress={() => setImageUri(null)}>
+            <Text style={styles.text}>Retake</Text>
+          </TouchableOpacity>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
@@ -120,21 +147,6 @@ export default function Camera() {
           </TouchableOpacity>
         </View>
       </CameraView>
-      {imageUri && (
-        <View>
-          <Image source={{ uri: imageUri }} style={styles.preview} />
-          <Button title="Save Picture" onPress={savePicture} />
-        </View>
-      )}
-      <FlatList
-        data={assets}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.thumbnail} />
-        )}
-        horizontal
-        style={styles.assetList}
-      />
     </View>
   );
 }
@@ -171,7 +183,7 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: '100%',
-    height: 200,
+    height: '90%',
     marginTop: 10,
   },
   assetList: {
