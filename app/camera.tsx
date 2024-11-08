@@ -15,6 +15,7 @@ export default function Camera() {
 
   //getting permission on media-library
   useEffect(() => {
+    RNFS.mkdir(`${RNFS.ExternalDirectoryPath}/photos/`);
     const checkPermissions = async () => {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -49,6 +50,8 @@ export default function Camera() {
   //capture a image from camera
   const takePicture = async () => {
     if (cameraRef.current) {
+      const sizes = await cameraRef.current.getAvailablePictureSizesAsync();
+      console.log(sizes);
       const photo = await cameraRef.current.takePictureAsync();
       console.log('photo: ', photo)
       setImageUri(photo.uri);
@@ -61,13 +64,17 @@ export default function Camera() {
     if (imageUri) {
         const fileName = `photo_${Date.now()}.jpg`; // Unique file name
         const path = `${RNFS.PicturesDirectoryPath}/${fileName}`;
-
+        const dir = `${RNFS.ExternalDirectoryPath}/photos/${fileName}`;
+        // console.log(RNFS.ExternalDirectoryPath);
         try {
-          await RNFS.moveFile(imageUri, path);
-          Alert.alert('Success', `Image saved to ${path}`);
+          // console.log(await RNFS.readdir(dir));
+          await RNFS.moveFile(imageUri, dir);
+          Alert.alert('Success', `Image saved to ${dir}`);
+          // setImageUri(null);
         } catch (error) {
           console.error('Error saving image:', error);
           Alert.alert('Error', 'Failed to save the image.');
+          return;
         }
 
     //     try {
@@ -134,7 +141,7 @@ export default function Camera() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef} pictureSize={'1600x1200'}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
             <Text style={styles.text}>Flip Camera</Text>
@@ -163,7 +170,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   camera: {
-    flex: 1,
+    width: 'auto',
+    height: "68%",
   },
   buttonContainer: {
     flex: 1,
@@ -182,8 +190,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   preview: {
-    width: '100%',
-    height: '90%',
+    width: 'auto',
+    height: "68%",
     marginTop: 10,
   },
   assetList: {

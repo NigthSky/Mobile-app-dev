@@ -129,6 +129,7 @@ export default function Index() {
       <Pressable style={styles.loginButton} onPress={() => router.push('/camera')}><Text>Camera</Text></Pressable>
       <Pressable style={styles.loginButton} onPress={() => router.push('/signature')}><Text>signature</Text></Pressable>
       <Pressable style={styles.loginButton} onPress={() => router.push('./test')}><Text>test</Text></Pressable>
+      <Pressable style={styles.loginButton} onPress={() => router.push('./location')}><Text>Location</Text></Pressable>
       {Users}
     </View>
   );

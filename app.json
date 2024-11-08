@@ -36,6 +36,12 @@
           "savePhotosPermission": "Allow my-app to save photos.",
           "isAccessMediaLocationEnabled": true
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow my-app to use your location."
+        }
       ]
     ],
     "ios": {
@@ -55,7 +61,8 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.ACCESS_MEDIA_LOCATION",
         "android.permission.ACTION_REQUEST_MANAGE_MEDIA",
-        "INTERNET"
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "package": "com.nigthsky00.myapp"
     },
