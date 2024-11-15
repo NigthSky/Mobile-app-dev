@@ -4,15 +4,12 @@ const bodyParser = require('body-parser');
 // const userVerify = require("./UserVerify.js");
 const app = express();
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded())
-
-// parse application/json
-app.use(bodyParser.json())
-
-// var cors = require('cors')
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 
 // SQL Server configuration
@@ -121,10 +118,61 @@ app.post('/test/timelogs/insert', (req,res) => {
 });
 
 
-app.get('/', (req,res) => {
-    res.send(`SERVER`)
-}) ;
+// Multer storage configuration
+const uploadsDir = 'uploads/';
 
+// Configure multer storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadsDir); // Directory to save uploaded files
+    },
+    filename: (req, file, cb) => {
+        // Save file with a unique name
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+    },
+});
+
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 5 MB
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png|gif/; // Allowed file types
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        
+        if (mimetype && extname) {` `
+            return cb(null, true);
+        } else {
+            cb('Error: File type not supported');
+        }
+    }
+});
+
+// Upload route
+app.post('/test/upload', (req, res, next) => {
+    upload.single('file')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            // A Multer error occurred when uploading.
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ success: false, error: 'File too large. Max size is 5 MB.' });
+            }
+            return res.status(500).json({ success: false, error: 'Multer error occurred during upload.' });
+        } else if (err) {
+            // An unknown error occurred when uploading.
+            return res.status(500).json({ success: false, error: 'An unknown error occurred.' });
+        }
+        
+        // Everything went fine
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'No file uploaded.' });
+        }
+        
+        console.log('Uploaded file:', req.file);
+        res.json({ success: true, filePath: req.file.path });
+    });
+});
 // Start the server on port 3000
 app.listen(9000, () => {
     console.log("Listening on port 9000...");
