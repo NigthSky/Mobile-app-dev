@@ -5,7 +5,6 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 
 export default function signature() {
-  const [sign, setSign] = useState(null);
 
   const handleOK = async(signature:any) => {
     const path = FileSystem.cacheDirectory + "sign.jpg";
@@ -22,22 +21,21 @@ export default function signature() {
   const handleEmpty = () => {
   };
 
-  const style = `.m-signature-pad--footer
+  const style = 
+  `.m-signature-pad {
+    position: fixed;
+    margin:auto; 
+    top: 0; 
+    width:100%;
+    height:90%
+  },
+  .m-signature-pad--footer
     .button {
       background-color: red;
       color: #FFF;
     }`;
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.preview}>
-        {sign ? (
-          <Image
-            resizeMode={"contain"}
-            style={{ width: 335, height: 114 }}
-            source={{ uri: sign}}
-          />
-        ) : null}
-      </View>
       <Signature
         onOK={handleOK}
         onEmpty={handleEmpty}
@@ -51,14 +49,6 @@ export default function signature() {
 };
 
 const styles = StyleSheet.create({
-  preview: {
-    width: 335,
-    height: 114,
-    backgroundColor: "#F8F8F8",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 15,
-  },
   previewText: {
     color: "#FFF",
     fontSize: 14,

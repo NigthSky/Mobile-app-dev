@@ -42,7 +42,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow my-app to use your location."
         }
-      ]
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ] 
     ],
     "ios": {
       "supportsTablet": true

@@ -149,9 +149,6 @@ export default function Camera() {
           <TouchableOpacity style={styles.button} onPress={takePicture}>
             <Text style={styles.text}>Take Picture</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={fetchAssetsFromAlbum}>
-            <Text style={styles.text}>Get Album Assets</Text>
-          </TouchableOpacity>
         </View>
       </CameraView>
     </View>
@@ -171,7 +168,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     width: 'auto',
-    height: "68%",
+    height: "100%",
   },
   buttonContainer: {
     flex: 1,

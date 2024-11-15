@@ -25,22 +25,28 @@ export default function test() {
     }
 
     const uploadImage = async() => {
-        const formData = new FormData();
-        formData.append('file', {
-            uri: "file:///storage/emulated/0/Android/data/com.nigthsky00.myapp/files/photos/photo_1731038101769.jpg",
-            name: 'photo_1731025264805.jpg', // Change the name as necessary
-            type: 'image/jpeg', // Ensure this matches the image type
-        } as any);
+        const path = `${RNFS.ExternalDirectoryPath}/photos`;
+        const files = await RNFS.readdir(path);
+        console.log(files);
+        
         
         try {
-            const response:any = await axios.post('http://192.168.0.63:9000/test/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-        
-            console.log('Upload successful:', response.data);
-            Alert.alert('Success', 'Image uploaded successfully!');
+            for(const photo of files) {
+                const formData = new FormData();
+                formData.append('file', {
+                    uri: `file://${RNFS.ExternalDirectoryPath}/photos/${photo}`,
+                    name: photo, // Change the name as necessary
+                    type: 'image/jpeg', // Ensure this matches the image type
+                } as any);
+                const response:any = await axios.post('http://192.168.0.63:9000/test/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                console.log('Upload successful:', response.data);
+                Alert.alert('Success', 'Image uploaded successfully!');
+            }
+
         } catch (error:any) {
             if (error.response) {
                 console.log(error.response.data)
@@ -57,10 +63,10 @@ export default function test() {
         <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
             <Button title="Upload" onPress={uploadImage}/>
             <Button title="check Image" onPress={getImage}/>
-           <Image
+           {/* <Image
                 source={{uri:'file:///storage/emulated/0/Android/data/com.nigthsky00.myapp/files/photos/photo_1731038101769.jpg'}}
                 style={{width:200, height:200}}
-            />
+            /> */}
         </View>
     )
 }
