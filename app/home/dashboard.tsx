@@ -1,12 +1,47 @@
-import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, Modal } from 'react-native';
+import { View, Text, Button, FlatList, Modal, Alert, Pressable, Image, ScrollView } from 'react-native';
+import { fetchUser_Time_logs } from '../../components/database/time_logs';
+import { getCurrentUser } from '../../components/database/currentuser';
+import { fetchTimelogUri, monitorCheck, updateData } from '../../save _and_process/timeLogs';
+import {BioMectrics } from '../../components/modals/CustomModal';
+import { useGlobalSearchParams } from 'expo-router';
+
 
 export default function Dashboard() {
+  const extra = useGlobalSearchParams();
   const [loaing, setLoading] = useState<boolean>(false)
   const [attendance, setAttendance] = useState<boolean>(false)
-
   const [currentTime, setCurrentTime] = useState('');
+  const [user, setUser] = useState<any| null> (extra);
+  const [userLogs, setUserLogs] = useState<any|null>(null);
+  const [record, setRecord] = useState<any>();
+  
+  useEffect(() => {
+    const getReadyData = async() => {
+      try {
+          const responce = await getCurrentUser();
+          // setUser(responce);
+          const res = await fetchUser_Time_logs(user.id);
+          console.log("responce: ",res)
+          setUserLogs(res);
+          const check = await monitorCheck(res);
+          console.log(check)
+          if(check) {
+            updateData(check)
+          } else {
+            updateData(check)
+          }
+          setRecord(fetchTimelogUri)
+          console.log(record)
+      }
+      catch(err) {
+        alert(err)
+      }
+    }
+    getReadyData();
+  },[])
+
+
 
   // Function to format time with AM/PM
   const formatTime = () => {
@@ -22,12 +57,15 @@ export default function Dashboard() {
 
     return `${hours}:${minutes}:${seconds} ${ampm}`;
   };
+  
+
 
   // Update the time every second
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentTime(formatTime());
     }, 1000);
+
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
@@ -48,70 +86,59 @@ export default function Dashboard() {
     'Time-Out-Signature',
   ];
 
-  const testusers = [
-    {
-      user: 'admin',
-      code: 1,
-      timeIn: 'Nov 15, 2024, 7:59:31 AM',
-      timeOut: 'Nov 15, 2024, 5:06:20 PM',
-      timeInCoodinate: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeOutCoodinate: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeInLocation: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeoutLocation: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeInImage: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeOutImage: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeInSignature: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeOutSignature: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-    },
-    {
-      user: 'User',
-      code: 2,
-      timeIn: 'Nov 15, 2024, 7:59:31 AM',
-      timeOut: 'Nov 15, 2024, 5:06:20 PM',
-      timeInCoodinate: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeOutCoodinate: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeInLocation: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeoutLocation: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeInImage: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeOutImage: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeInSignature: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-      timeOutSignature: '69 Maysilo Cir, Mandaluyong, 1550 Metro Manila',
-    },
-  ];
-
   // Function to get user data based on the current header
-  const getUserData = (item:any, user:any) => {
+  const getUserData = (item:any, logs:any) => {
     switch (item) {
       case 'User':
-        return user.user;
+        return <Text>{user.username}</Text>
       case 'Code':
-        return user.code;
+        return <Text>{logs.user_id}</Text>;
       case 'Time-in':
-        return user.timeIn;
+        return <Text>{logs.time_in}</Text>;
       case 'Time-Out':
-        return user.timeOut;
+        return <Text>{logs.time_out}</Text>;
       case 'Time-In-Coodinate':
-        return user.timeInCoodinate;
+        return <Text>{logs.coordTime_in}</Text>;
       case 'Time-Out-Coodinate':
-        return user.timeOutCoodinate;
+        return <Text>{logs.coordTime_out}</Text>;
       case 'Time-In-Location':
-        return user.timeInLocation;
+        return <Text>{logs.locTime_in}</Text>;
       case 'Time-Out-Location':
-        return user.timeoutLocation;
+        return <Text>{logs.locTime_out}</Text>;
       case 'Time-In-Image':
-        return user.timeInImage;
+        if(!logs.imgtime_in ||!logs.imgtime_in.trim()){
+          return '';
+        }
+        return <Image source={{uri:logs.imgtime_in}} style={{height:50}}/>;
       case 'Time-Out-Image':
-        return user.timeOutImage;
+        if(!logs.imgtime_out || !logs.imgtime_out.trim()) {
+          return '';
+        }
+        return <Image source={{uri:logs.imgtime_out}} alt='out' style={{height:50}}/>;
       case 'Time-In-Signature':
-        return user.timeInSignature;
+        if(!logs.signtime_in || !logs.signtime_in.trim()) {
+          return '';
+        }
+        return <Image source={{uri:logs.signtime_in}} style={{height:50}}/>;
       case 'Time-Out-Signature':
-        return user.timeOutSignature;
+        if(!logs.signtime_out || !logs.signtime_out.trim()){
+          return '';
+        }
+        return <Image source={{uri:logs.signtime_out}} alt='out' style={{height:50}}/>;;
       default:
         return '';
     }
   };
 
-  if(loaing) {
+
+  const refresh = async() => {
+    try {const res = await fetchUser_Time_logs(user.id);
+      setUserLogs(res);
+    }
+    catch(err){ alert(err)}
+  }
+
+  if(!record) {
     return(
         <Modal>
           <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -124,44 +151,38 @@ export default function Dashboard() {
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
-      <Modal
-        visible={attendance}
-        transparent={true}
-          style={{justifyContent:'center', alignItems:'center'}}
-          animationType="slide"
-      >
-      <View style={{flex:1, width:'40%', justifyContent:'center', alignSelf:'center',}}>
-        <View style={{borderWidth:2, padding:20, borderRadius:10}}>
-          <Text style={{fontSize:40, fontWeight:'bold', alignSelf:'center'}}>{currentTime}</Text>
-          <Button title='Time-In' onPress={() => setAttendance(false)}/>
-          <Button title='Time-Out' onPress={() => setAttendance(false)}/>
-          <Button title='close' onPress={() => setAttendance(false)}/>
-        </View>
-      </View>
-      </Modal>
-      
+      {/* TIme IN - Time OUT Modal */}
+      <BioMectrics visible={attendance} onClose={() => setAttendance(false)} imgData={record} user={user}>
+         <Text style={{fontSize:30, fontWeight:'bold', alignSelf:'center', marginBottom:5}}>{currentTime}</Text>
+      </BioMectrics>
+
+      {/* Home Display */}
       <Text style={{ fontSize: 18, marginBottom: 10 }}>Attendance</Text>
-      <FlatList
-        data={testlist}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginRight: 10 }}>
-            <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{item}</Text>
-            <FlatList
-              data={testusers}
-              keyExtractor={(user, index) => index.toString()}
-              renderItem={({ item: user }) => (
-                <View style={{ padding: 5, backgroundColor: '#ddd', borderRadius: 10, marginBottom: 5 }}>
-                  <Text>{getUserData(item, user)}</Text>
-                </View>
-              )}
-            />
-          </View>
-        )}
-      />
-      <Button title='Time-In / Time-Out' onPress={() => setAttendance(true)}/>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <FlatList
+          data={testlist}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={{ marginRight: 10}}>
+              <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{item}</Text>
+              <FlatList
+                data={userLogs}
+                keyExtractor={(user, index) => index.toString()}
+                renderItem={({ item: logs }) => (
+                  <View style={{ padding: 10, backgroundColor: '#ddd', borderRadius: 10, marginBottom: 5 ,height:60,justifyContent:'center',}}>
+                    {getUserData(item, logs)}
+                  </View>
+                )}
+              />
+            </View>
+          )}
+        />
+      </ScrollView>
+      <Button title='Time-In / Time-Out' onPress={() => {setAttendance(true);}}/>
+      <View style={{marginTop:5}}><Button title='Refresh' onPress={refresh}/></View>
     </View> 
+    
   );
 }

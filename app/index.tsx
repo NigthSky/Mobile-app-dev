@@ -8,6 +8,9 @@ import {addLocaluser, synchronize} from '../components/synchronize'
 import * as ScreenOrientation from 'expo-screen-orientation';
 import Register from '../components/Register';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import RNFS from 'react-native-fs';
+import { fetchUser_Time_logs } from "../components/database/time_logs";
+import { monitorCheck, updateData } from "../save _and_process/timeLogs";
 
 
 
@@ -29,6 +32,10 @@ export default function Index() {
 
   // DATABASE CONNECTION AND TABLE CREATION
   useEffect(() => {
+    RNFS.mkdir(`${RNFS.ExternalDirectoryPath}/photos/Attendance/Time-In/signature`);
+    RNFS.mkdir(`${RNFS.ExternalDirectoryPath}/photos/Attendance/Time-In/camera`);
+    RNFS.mkdir(`${RNFS.ExternalDirectoryPath}/photos/Attendance/Time-Out/signature`);
+    RNFS.mkdir(`${RNFS.ExternalDirectoryPath}/photos/Attendance/Time-Out/camera`);
     createTable(); // Create table on component mount
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
   }, []);
@@ -38,29 +45,31 @@ export default function Index() {
 
   //LOG IN Process
   const fetchUser = async () => {
-    console.log('got in')
-      router.replace("/home");
-  //   if(!username.trim() || !password.trim()) {
-  //     return alert('Username and password cannot be Empty');
-  // }
-  //   setMessage('');
-  //   setPassword('');
-  //   setUsername('');
-  //   try {
-  //     const userData = await getUser(username, password);
-  //     console.log('Fetched user data:', userData);
-  //     if (typeof userData === 'object' && userData !== null && !Array.isArray(userData)) {
-  //       const add = await currentUserInfo(userData.username, userData.id);
-  //       alert(`Log in Successfully`);
-  //       router.replace("/(tabs)")
-  //     } else {
-  //       alert(userData);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching user:', error);
-  //     setMessage(`Error fetching user ${error}`);
-  //     alert(message);
-  //   }
+      console.log('got in')
+      // router.replace("/home");
+
+    if(!username.trim() || !password.trim()) {
+      return alert('Username and password cannot be Empty');
+  }
+    setMessage('');
+    setPassword('');
+    setUsername('');
+    try {
+      const userData = await getUser(username, password);
+      console.log('Fetched user data:', userData);
+      if (typeof userData === 'object' && userData !== null && !Array.isArray(userData)) {
+        const user = {username:userData.username , id:userData.id}
+        const add = await currentUserInfo(userData.username, userData.id);
+        alert(`Log in Successfully`);
+        router.replace({pathname:"/home", params:user});
+      } else {
+        alert(userData);
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      setMessage(`Error fetching user ${error}`);
+      alert(message);
+    }
   };
 
   //GET ALL USERS.
@@ -87,20 +96,20 @@ export default function Index() {
  //PROCESS SYNC
   const synchronizeStart = async () => {
       // setIsLoading(true);
-      // try {
-      //     const localToServer = await addLocaluser();
+      try {
+          const localToServer = await addLocaluser();
   
-      //     if (localToServer) {
-      //       console.log('ads',localToServer);
-      //         const syncResult = await synchronize();
-      //         alert(syncResult); // Log the result of synchronization
+          if (localToServer) {
+            console.log('ads',localToServer);
+              const syncResult = await synchronize();
+              alert(syncResult); // Log the result of synchronization
               
-      //     }
-      //     setIsLoading(false);
-      // } catch (error) {
-      //     console.error('Error on processing Synchronize:', error);
-      //     setIsLoading(false);
-      // } 
+          }
+          setIsLoading(false);
+      } catch (error) {
+          console.error('Error on processing Synchronize:', error);
+          setIsLoading(false);
+      } 
   };
 
 
@@ -137,6 +146,7 @@ export default function Index() {
           <Pressable style={styles.loginButton} onPress={fetchUser}><Text>Log in</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={() => setRegister(true)}><Text>Register</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={synchronizeStart}><Text>Sync Users</Text></Pressable>
+          {/* <Pressable style={styles.loginButton} onPress={() => router.push('./location')}><Text>Location</Text></Pressable>  */}
           {/* <Pressable style={styles.loginButton} onPress={getAllUsers}><Text>Get ALL Users</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={() => router.push('/camera')}><Text>Camera</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={() => router.push('/signature')}><Text>signature</Text></Pressable>

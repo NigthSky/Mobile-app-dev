@@ -8,7 +8,6 @@ export default function RootLayout() {
       {/* <Stack.Screen name="Profile"/>
       <Stack.Screen name="camera"/>
       <Stack.Screen name="signature"/>
-      <Stack.Screen name="location"/>
       <Stack.Screen name="screenOrientation"/> */}
     </Stack>
   );
