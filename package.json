@@ -20,8 +20,10 @@
     "expo-draw": "github:MarangoniEduardo/expo-draw",
     "expo-file-system": "^17.0.1",
     "expo-linking": "^6.3.1",
+    "expo-location": "~17.0.1",
     "expo-media-library": "^16.0.5",
     "expo-router": "^3.5.23",
+    "expo-screen-orientation": "~7.0.5",
     "expo-sqlite": "^14.0.6",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
@@ -33,8 +35,7 @@
     "react-native-signature-canvas": "^4.7.2",
     "react-native-signature-capture": "^0.4.12",
     "react-native-webview": "13.8.6",
-    "expo-location": "~17.0.1",
-    "expo-screen-orientation": "~7.0.5"
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
