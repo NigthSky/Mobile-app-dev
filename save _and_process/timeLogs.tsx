@@ -3,7 +3,7 @@ import { addMonitor, checkMonitor, time_IN, time_OUT } from "../components/datab
 import { location } from "../components/location";
 import RNFS from 'react-native-fs';
 
-const date = new Date();
+
 const options: Intl.DateTimeFormatOptions = {
   timeZone: 'Asia/Manila', // Set timezone to Philippines (GMT+8)
   month: 'short', // Abbreviated month (e.g., "Nov")
@@ -14,10 +14,16 @@ const options: Intl.DateTimeFormatOptions = {
   second: '2-digit', // Seconds (e.g., "04")
   hour12: true, // Use 12-hour format
 };
-const formattedTime = new Intl.DateTimeFormat('en-US', options).format(new Date);
-const dateOnly = (formattedTime.split(",")[0] + "," + formattedTime.split(",")[1])
+ 
+const formattedTime = () => {
+    return(new Intl.DateTimeFormat('en-US', options).format(new Date));
+}
+const dateOnly = () => {
+    return(formattedTime().split(",")[0] + "," + formattedTime().split(",")[1]) 
+}
+
 console.log(formattedTime)
-console.log(formattedTime.split(",")[0] + "," + formattedTime.split(",")[1]);
+console.log(formattedTime().split(",")[0] + "," + formattedTime().split(",")[1]);
 
 const data = {
     INimageUri: '',
@@ -35,7 +41,7 @@ const data = {
 }
 
 const saveCamPics = async(path:string, user:any) => {
-    const fileName = `${user.username}_${formattedTime}.jpg`; // Unique file name
+    const fileName = `${user.username}_${formattedTime()}.jpg`; // Unique file name
     const trimName = fileName.replace(/\s+/g, '').trim();
     const removeComma = trimName.replace(/,/g, '-')
     const finalname = removeComma.replace(/:/g, '-')
@@ -59,7 +65,7 @@ const saveCamPics = async(path:string, user:any) => {
 
 
 const saveSignPics = async (path:string, user:any) => {
-    const fileName = `${user.username}_${formattedTime}.jpg`;
+    const fileName = `${user.username}_${formattedTime()}.jpg`;
     const trimName = fileName.replace(/\s+/g, '').trim();
     const removeComma = trimName.replace(/,/g, '-')
     const finalname = removeComma.replace(/:/g, '-')
@@ -96,7 +102,7 @@ export const SaveBio = async(req:string,user:any) =>{
             }
             data.CoordIn = coord.coordinate;
             data.LocIn = coord.address ?? 'Unknown';
-            data.TimeIn = formattedTime;
+            data.TimeIn = formattedTime();
             await saveCamPics(req, user);
             await saveSignPics(req, user);
             console.log(data);
@@ -112,7 +118,7 @@ export const SaveBio = async(req:string,user:any) =>{
             }
             data.CoordOut = coord.coordinate;
             data.LocOut = coord.address ?? 'Unknown';
-            data.TimeOut = formattedTime;
+            data.TimeOut = formattedTime();
             await saveCamPics(req, user)
             await saveSignPics(req, user);
             console.log(data);
@@ -162,7 +168,7 @@ export const monitorCheck = async( logs:any) => {
     try{
         for(const log of logs) {
             let trim = log.time_in.split(",")[0] + "," + log.time_in.split(",")[1]
-            if(trim === dateOnly){
+            if(trim === dateOnly()){
                 return(log);
             }
         }

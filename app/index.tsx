@@ -146,6 +146,7 @@ export default function Index() {
           <Pressable style={styles.loginButton} onPress={fetchUser}><Text>Log in</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={() => setRegister(true)}><Text>Register</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={synchronizeStart}><Text>Sync Users</Text></Pressable>
+          <Pressable style={styles.loginButton} onPress={() => router.push('./test')}><Text>test</Text></Pressable>
           {/* <Pressable style={styles.loginButton} onPress={() => router.push('./location')}><Text>Location</Text></Pressable>  */}
           {/* <Pressable style={styles.loginButton} onPress={getAllUsers}><Text>Get ALL Users</Text></Pressable>
           <Pressable style={styles.loginButton} onPress={() => router.push('/camera')}><Text>Camera</Text></Pressable>
