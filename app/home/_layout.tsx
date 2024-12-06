@@ -6,6 +6,25 @@ import { sycnTimelogs } from '../../components/synchronize';
 
 export default function TabLayout() {
 
+  const sycn = async() => {
+    try {
+      const result = await sycnTimelogs();
+      if(result) {
+        console.log(result);
+        alert(result);
+      }
+    }
+    catch (error:any) {
+      if (error.response) {
+          console.log(error.response.data)
+          alert(`Error: ${error.response.data.error}`);
+      } else {
+          console.error('Error:', error.message);
+          alert(`Error: ${error.message}`);
+      }
+  }
+  }
+
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
       <Tabs.Screen
@@ -14,7 +33,7 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
           headerRight: () => (
-            <TouchableOpacity style={{marginEnd:20}}><AntDesign name="sync" size={24} color="black" onPress={() => alert(sycnTimelogs())}/></TouchableOpacity>
+            <TouchableOpacity style={{marginEnd:20}}><AntDesign name="sync" size={24} color="black" onPress={sycn}/></TouchableOpacity>
           ),
         }}
       />

@@ -21,6 +21,7 @@ export default function Dashboard() {
       try {
           const responce = await getCurrentUser();
           // setUser(responce);
+          console.log('user_id', user.id);
           const res = await fetchUser_Time_logs(user.id);
           console.log("responce: ",res)
           setUserLogs(res);

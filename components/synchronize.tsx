@@ -59,20 +59,22 @@ export const synchronize = async() => {
 
 // PROCESS SYCN TIMe LOGS
 export const sycnTimelogs = async() => {
-    try{
-        const tLogs = await fetchTime_Logs(); //get user time logs in local db.
-        if(tLogs) {
-            for(const log of tLogs) {
-                const addlog = await logsToSever(log); //Send time logs data to the server.
+
+        try{
+            const tLogs = await fetchTime_Logs(); //get user time logs in local db.
+            if(tLogs) {
+                for(const log of tLogs) {
+                    const addlog = await logsToSever(log); //Send time logs data to the server.
+                }
+                return('sycn log successfully');
+            } else {
+                return ('Error on getting time logs');
             }
-            return('sycn log successfully');
-        } else {
-            return ('Error on getting time logs');
+            
         }
-        
-    }
-    catch(error) {
-        console.log(error);
-        return 'Synchronization failed';  
-    }
+        catch(error) {
+            console.log(error);
+            return 'Synchronization failed';  
+        }
+
 }

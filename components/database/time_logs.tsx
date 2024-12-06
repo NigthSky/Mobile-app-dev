@@ -9,9 +9,10 @@ export const time_IN = (user_id:number,data:any): Promise<any> => {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
-          'INSERT INTO time_logs (user_id, time_in, imgtime_in, signtime_in, coordTime_in, locTime_in) VALUES (?,?,?,?,?,?);',
+          'INSERT INTO time_logs (user_id, date, time_in, imgtime_in, signtime_in, coordTime_in, locTime_in) VALUES (?,?,?,?,?,?,?);',
           [
             user_id,
+            data.date,
             data.TimeIn,
             data.INimageUri,
             data.INsignUri,

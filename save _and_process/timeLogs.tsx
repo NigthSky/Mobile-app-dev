@@ -38,6 +38,7 @@ const data = {
     TimeOut: '',
     InDisable: false,
     OutDisable: false,
+    date:'',
 }
 
 const saveCamPics = async(path:string, user:any) => {
@@ -140,6 +141,8 @@ export const setCam = (path:string, uri:string) => {
     console.log(path, uri)
     if(path === 'Time-In') {
         data.INimageUri = uri;
+        const date = new Date();
+        data.date = date.toISOString().split('T')[0];
     }  
     if(path === 'Time-Out'){
         data.OUTimageUri = uri;
@@ -151,6 +154,8 @@ export const setSign = (path:string, uri:string) => {
     console.log(path, uri)
     if(path === 'Time-In') {
         data.INsignUri =`file://${uri}`;
+        const date = new Date();
+        data.date = date.toISOString().split('T')[0];
     } 
     if(path === 'Time-Out'){
         data.OUTsignUri =`file://${uri}`;

@@ -35,6 +35,7 @@ export const createTable = () => {
       `CREATE TABLE IF NOT EXISTS time_logs(
         id INTEGER PRIMARY KEY NOT NULL,
         user_id INT NOT NULL,
+        date TEXT,
         time_in TEXT,
         time_out TEXT,
         imgtime_in TEXT, 
